@@ -1,0 +1,29 @@
+{
+    "name": "three-projects",
+    "version": "1.0.0",
+    "description": "```bash npm init -y npm install webpack --save-dev npm install three --save ```",
+    "main": "src/app.js",
+    "scripts": {
+        "start": "webpack-dev-server --open",
+        "build": "webpack --mode=production"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "MIT",
+    "devDependencies": {
+        "eslint": "^7.2.0",
+        "eslint-config-airbnb-base": "^14.2.0",
+        "eslint-plugin-import": "^2.21.2",
+        "file-loader": "^6.0.0",
+        "html-webpack-plugin": "^4.3.0",
+        "jsdoc": "^3.6.4",
+        "webpack": "^4.43.0",
+        "webpack-cli": "^3.3.11",
+        "webpack-dev-server": "^3.11.0"
+    },
+    "dependencies": {
+        "dat.gui": "^0.7.7",
+        "stats.js": "^0.17.0",
+        "three": "^0.117.1"
+    }
+}
