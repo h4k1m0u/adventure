@@ -9,7 +9,14 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import pathImageLeft from 'assets/images/left.png';
 import pathImageRight from 'assets/images/right.png';
 import pathModelDuck from 'assets/models/duck.glb';
-import skybox from './modules/meshes';
+
+// 6-sided background texture images
+import pathSkyboxRight from 'assets/images/miramar_rt.jpg';
+import pathSkyboxLeft from 'assets/images/miramar_lf.jpg';
+import pathSkyboxTop from 'assets/images/miramar_up.jpg';
+import pathSkyboxBottom from 'assets/images/miramar_dn.jpg';
+import pathSkyboxFront from 'assets/images/miramar_ft.jpg';
+import pathSkyboxBack from 'assets/images/miramar_bk.jpg';
 
 /*
 * GUI & stats panels
@@ -98,9 +105,16 @@ function init() {
   sprites.add(spriteRight);
   scene.add(sprites);
 
-  // skybox cube with textures
-  const sb = skybox();
-  scene.add(sb);
+  // skybox-like scene background texture
+  const texture = new THREE.CubeTextureLoader().load([
+    pathSkyboxFront,
+    pathSkyboxBack,
+    pathSkyboxTop,
+    pathSkyboxBottom,
+    pathSkyboxRight,
+    pathSkyboxLeft,
+  ]);
+  scene.background = texture;
 
   // raycast & mouse click listener
   const raycaster = new THREE.Raycaster();

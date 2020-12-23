@@ -98,6 +98,12 @@ Icons are available on [this website][4] on a permissive license.
 [4]: https://iconify.design/icon-sets/
 
 
+# Skybox
+The skybox, available on [miramar-skybox], was made by Jockum Skoglund (hipshot) and is distributed under the CC-BY 3.0 license.
+
+[miramar-skybox]: https://opengameart.org/content/miramar-skybox
+
+
 # 3D Model
 - A 3D model of a duck downloaded from [khronos-repo] in glb format.
 - glb is like gltf but everything including the texture is bundled inside the same file.
