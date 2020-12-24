@@ -1,22 +1,21 @@
-// import libraries
+// import libraries & scss
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import * as dat from 'dat.gui';
 import Stats from 'stats.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import './scss/style.scss';
 
-// images & 3d model paths
-import pathImageLeft from 'assets/images/left.png';
-import pathImageRight from 'assets/images/right.png';
+// 3d model path
 import pathModelDuck from 'assets/models/duck.glb';
 
 // 6-sided background texture images
-import pathSkyboxRight from 'assets/images/miramar_rt.jpg';
-import pathSkyboxLeft from 'assets/images/miramar_lf.jpg';
-import pathSkyboxTop from 'assets/images/miramar_up.jpg';
-import pathSkyboxBottom from 'assets/images/miramar_dn.jpg';
-import pathSkyboxFront from 'assets/images/miramar_ft.jpg';
-import pathSkyboxBack from 'assets/images/miramar_bk.jpg';
+import pathSkyboxRight from 'assets/images/skybox/miramar_rt.jpg';
+import pathSkyboxLeft from 'assets/images/skybox/miramar_lf.jpg';
+import pathSkyboxTop from 'assets/images/skybox/miramar_up.jpg';
+import pathSkyboxBottom from 'assets/images/skybox/miramar_dn.jpg';
+import pathSkyboxFront from 'assets/images/skybox/miramar_ft.jpg';
+import pathSkyboxBack from 'assets/images/skybox/miramar_bk.jpg';
 
 /*
 * GUI & stats panels
@@ -59,7 +58,6 @@ function init() {
   */
   // setup scene
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xdddddd);
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight,
     0.1, 1000);
   renderer = new THREE.WebGLRenderer({ alpha: true });
@@ -89,22 +87,6 @@ function init() {
   cube = new THREE.Mesh(geometry, material);
   scene.add(cube);
 
-  // arrow sprites
-  const textureSpriteLeft = new THREE.TextureLoader().load(pathImageLeft);
-  const materialSpriteLeft = new THREE.SpriteMaterial({ map: textureSpriteLeft });
-  const spriteLeft = new THREE.Sprite(materialSpriteLeft);
-  spriteLeft.position.set(-1, 1, 0);
-
-  const textureSpriteRight = new THREE.TextureLoader().load(pathImageRight);
-  const materialSpriteRight = new THREE.SpriteMaterial({ map: textureSpriteRight });
-  const spriteRight = new THREE.Sprite(materialSpriteRight);
-  spriteRight.position.set(1, 1, 0);
-
-  const sprites = new THREE.Group();
-  sprites.add(spriteLeft);
-  sprites.add(spriteRight);
-  scene.add(sprites);
-
   // skybox-like scene background texture
   const texture = new THREE.CubeTextureLoader().load([
     pathSkyboxFront,
@@ -116,35 +98,19 @@ function init() {
   ]);
   scene.background = texture;
 
-  // raycast & mouse click listener
-  const raycaster = new THREE.Raycaster();
-  renderer.domElement.addEventListener('click', (event) => {
-    // change origin to center of canvas, orient y_axis to top, normalize coordinates in [-1, 1]
-    const mouse = new THREE.Vector2();
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-    // rotate cube on click on sprites
-    raycaster.setFromCamera(mouse, camera);
-    const intersect = raycaster.intersectObject(sprites, true);
-
-    if (intersect.length > 0) {
-      const spriteClicked = intersect[0].object;
-
-      if (spriteClicked.id === spriteLeft.id) {
-        cube.rotation.z += 0.2;
-      } else if (spriteClicked.id === spriteRight.id) {
-        cube.rotation.z -= 0.2;
-      }
-    }
+  // mouse click listener on menu items
+  document.getElementById('turn-right').addEventListener('click', () => {
+    cube.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(-10.0));
+  }, false);
+  document.getElementById('turn-left').addEventListener('click', () => {
+    cube.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(10.0));
   }, false);
 
-  // load 3d model
+  // add 3d model to scene
   const loader = new GLTFLoader();
-  loader.load(pathModelDuck,
-    (gltf) => {
-      scene.add(gltf.scene);
-    });
+  loader.load(pathModelDuck, (gltf) => {
+    scene.add(gltf.scene);
+  });
 }
 
 /**

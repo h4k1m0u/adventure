@@ -21,6 +21,15 @@ module.exports = {
           },
         ],
       },
+      {
+        // inject style in index.html, translate it to js, then compile it to css
+        test: /\.scss$/,
+        use: [
+          'style-loader',
+          'css-loader',
+          'sass-loader',
+        ],
+      },
     ],
   },
   resolve: {
@@ -32,6 +41,8 @@ module.exports = {
   },
   plugins: [
     // generate dist/index.html
-    new HtmlWebpackPlugin(),
+    new HtmlWebpackPlugin({
+      template: './src/views/index.html',
+    }),
   ],
 };

@@ -1,0 +1,30 @@
+$sky-blue: #87CEEB;
+
+body {
+  margin: 0;
+  font-family: Arial;
+}
+
+.menu {
+  position: absolute;
+  top: 50%;
+  background-color: rgba(0, 0, 0, 0.25);
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+      padding: 1em;
+      a {
+        text-decoration: none;
+        color: #fff;
+
+        &:hover {
+          color: $sky-blue;
+        }
+      }
+    }
+  }
+}
