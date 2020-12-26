@@ -4,6 +4,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import * as dat from 'dat.gui';
 import Stats from 'stats.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import Animation from 'modules/animation';
 import './scss/style.scss';
 
 // 3d model path
@@ -24,16 +25,12 @@ import pathSkyboxBack from 'assets/images/skybox/miramar_bk.jpg';
 // add parameters fields to panel
 const gui = new dat.GUI();
 const params = {
-  x: 0,
-  y: 0,
-  z: 0,
-  visible: true,
-  color: 0x00aaff,
+  visible_cube: true,
+  visible_duck: true,
+  color: 0xffffff,
 };
-gui.add(params, 'x', -100, 100, 0.1);
-gui.add(params, 'y', -100, 100, 0.1);
-gui.add(params, 'z', -100, 100, 0.1);
-gui.add(params, 'visible');
+gui.add(params, 'visible_cube');
+gui.add(params, 'visible_duck');
 gui.addColor(params, 'color');
 
 // show fps on performance monitor panel
@@ -45,9 +42,13 @@ document.body.appendChild(stats.dom);
 let scene;
 let camera;
 let renderer;
-let cube;
 let controls;
-const start = Date.now();
+let clock = new THREE.Clock();
+
+// 3D objects
+let cube;
+let animationCube;
+let duck;
 
 /**
  * Create scene, camera, renderer, and add objects to scene.
@@ -70,8 +71,7 @@ function init() {
   controls.update();
 
   // lightbulb
-  const light = new THREE.PointLight();
-  light.position.set(-5, 5, 0);
+  const light = new THREE.AmbientLight(0xbbbbbb);
   scene.add(light);
 
   /*
@@ -80,12 +80,6 @@ function init() {
   // add axes & grid to scene
   scene.add(new THREE.AxesHelper(5));
   scene.add(new THREE.GridHelper(20, 20));
-
-  // add cube to scene
-  const geometry = new THREE.BoxGeometry(1, 1, 1);
-  const material = new THREE.MeshLambertMaterial({ color: 0x00aaff });
-  cube = new THREE.Mesh(geometry, material);
-  scene.add(cube);
 
   // skybox-like scene background texture
   const texture = new THREE.CubeTextureLoader().load([
@@ -98,48 +92,58 @@ function init() {
   ]);
   scene.background = texture;
 
+  // add cube to scene
+  const geometry = new THREE.BoxGeometry(1, 1, 1);
+  const material = new THREE.MeshBasicMaterial({ color: params.color, envMap: scene.background });
+  cube = new THREE.Mesh(geometry, material);
+  scene.add(cube);
+
+  // animate cube movement
+  animationCube = new Animation(cube);
+
   // mouse click listener on menu items
-  document.getElementById('turn-right').addEventListener('click', () => {
-    cube.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(-10.0));
+  document.getElementById('play-animation').addEventListener('click', () => {
+    animationCube.play();
   }, false);
-  document.getElementById('turn-left').addEventListener('click', () => {
-    cube.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(10.0));
+  document.getElementById('stop-animation').addEventListener('click', () => {
+    animationCube.stop();
   }, false);
 
   // add 3d model to scene
   const loader = new GLTFLoader();
   loader.load(pathModelDuck, (gltf) => {
+    duck = gltf.scene;
     scene.add(gltf.scene);
   });
 }
 
 /**
- * Animation loop based on requestAnimationFrame.
+ * Main loop based on requestAnimationFrame.
  */
-function animate() {
+function tick() {
   stats.begin();
 
+  // animate cube
+  const delta = clock.getDelta();
+  animationCube.update(delta);
+
   // update box according to panels values
-  cube.visible = params.visible;
-  cube.position.set(params.x, params.y, params.z);
+  if (duck) {
+    duck.visible = params.visible_duck;
+  }
+  cube.visible = params.visible_cube;
   cube.material.color.set(params.color);
 
   // update orbit controls in each frame
   controls.update();
-
-  // rotate cube in each frame (for 10s)
-  if (Date.now() - start < 10000) {
-    cube.rotation.x += 0.01;
-    cube.rotation.y += 0.01;
-  }
 
   renderer.render(scene, camera);
 
   stats.end();
 
   // called before next screen repaint
-  window.requestAnimationFrame(animate);
+  window.requestAnimationFrame(tick);
 }
 
 init();
-animate();
+tick();
