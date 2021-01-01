@@ -1,11 +1,14 @@
-// import libraries & scss
+// import libraries
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import * as dat from 'dat.gui';
 import Stats from 'stats.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import Animation from 'modules/animation';
+
+// modules & scss
 import './scss/style.scss';
+import Animation from 'modules/animation';
+import { Shader, printGLVersion } from 'modules/shader';
 
 // 3d model path
 import pathModelDuck from 'assets/models/duck.glb';
@@ -43,11 +46,12 @@ let scene;
 let camera;
 let renderer;
 let controls;
-let clock = new THREE.Clock();
+const clock = new THREE.Clock();
 
 // 3D objects
-let cube;
+let cubeMoving;
 let animationCube;
+let cubeShader;
 let duck;
 
 /**
@@ -78,7 +82,7 @@ function init() {
   * Objects
   */
   // add axes & grid to scene
-  scene.add(new THREE.AxesHelper(5));
+  scene.add(new THREE.AxesHelper(10));
   scene.add(new THREE.GridHelper(20, 20));
 
   // skybox-like scene background texture
@@ -92,14 +96,29 @@ function init() {
   ]);
   scene.background = texture;
 
-  // add cube to scene
-  const geometry = new THREE.BoxGeometry(1, 1, 1);
-  const material = new THREE.MeshBasicMaterial({ color: params.color, envMap: scene.background });
-  cube = new THREE.Mesh(geometry, material);
-  scene.add(cube);
+  // add movable cube to scene
+  const geometryBasic = new THREE.BoxGeometry(1, 1, 1);
+  const materialBasic = new THREE.MeshBasicMaterial({
+    color: params.color,
+    envMap: scene.background,
+  });
+  cubeMoving = new THREE.Mesh(geometryBasic, materialBasic);
+  scene.add(cubeMoving);
 
   // animate cube movement
-  animationCube = new Animation(cube);
+  animationCube = new Animation(cubeMoving);
+
+  // add cube textured with shader to scene
+  printGLVersion();
+  const geometryShader = new THREE.BoxGeometry(1, 1, 1);
+  const materialShader = new THREE.ShaderMaterial({
+    uniforms: Shader.uniforms,
+    vertexShader: Shader.vertexShader,
+    fragmentShader: Shader.fragmentShader,
+  });
+  cubeShader = new THREE.Mesh(geometryShader, materialShader);
+  cubeShader.translateX(2);
+  scene.add(cubeShader);
 
   // mouse click listener on menu items
   document.getElementById('play-animation').addEventListener('click', () => {
@@ -131,8 +150,8 @@ function tick() {
   if (duck) {
     duck.visible = params.visible_duck;
   }
-  cube.visible = params.visible_cube;
-  cube.material.color.set(params.color);
+  cubeMoving.visible = params.visible_cube;
+  cubeMoving.material.color.set(params.color);
 
   // update orbit controls in each frame
   controls.update();

@@ -14,16 +14,17 @@
         "css-loader": "^5.0.1",
         "eslint": "^7.16.0",
         "eslint-config-airbnb-base": "^14.2.1",
+        "eslint-import-resolver-webpack": "^0.13.0",
         "eslint-plugin-import": "^2.22.1",
         "file-loader": "^6.2.0",
         "html-webpack-plugin": "^4.5.0",
         "jsdoc": "^3.6.6",
-        "sass": "^1.30.0",
+        "sass": "^1.32.0",
         "sass-loader": "^10.1.0",
         "style-loader": "^2.0.0",
         "webpack": "^4.44.2",
         "webpack-cli": "^3.3.12",
-        "webpack-dev-server": "^3.11.0"
+        "webpack-dev-server": "^3.11.1"
     },
     "dependencies": {
         "dat.gui": "^0.7.7",

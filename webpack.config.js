@@ -37,6 +37,7 @@ module.exports = {
     alias: {
       modules: path.resolve(__dirname, 'src/modules'),
       assets: path.resolve(__dirname, 'src/assets'),
+      scss: path.resolve(__dirname, 'src/scss'),
     },
   },
   plugins: [

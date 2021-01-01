@@ -20,6 +20,7 @@ class Animation {
   }
 
   play() {
+    this.action.reset();
     this.action.play();
   }
 
