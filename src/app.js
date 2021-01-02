@@ -61,13 +61,20 @@ function init() {
   /*
   * Scene
   */
-  // setup scene
+  // setup scene & camera
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight,
     0.1, 1000);
-  renderer = new THREE.WebGLRenderer({ alpha: true });
+
+  // webgl2 renderer (support opengl es3.0)
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('webgl2');
+  renderer = new THREE.WebGLRenderer({
+    alpha: true,
+    context,
+    canvas,
+  });
   renderer.setSize(window.innerWidth, window.innerHeight);
-  const canvas = renderer.domElement;
   document.body.appendChild(canvas);
 
   // scene navigation with pan/zoom/rotate
@@ -121,6 +128,10 @@ function init() {
   cubeShader.translateX(2);
   scene.add(cubeShader);
 
+  // send canvas size to shader using uniforms
+  console.log('Shader.uniforms ', Shader.uniforms);
+  Shader.uniforms.size.value.set(canvas.width, canvas.height);
+
   // mouse click listener on menu items
   document.getElementById('play-animation').addEventListener('click', () => {
     animationCube.play();
@@ -149,7 +160,6 @@ function tick(time) {
   // change cube color using shader uniforms
   const timeUniform = Shader.uniforms.time;
   timeUniform.value = time / 1000;
-  // console.log('Math.cos(time/1000) ', (1.0 + Math.cos(time / 1000)) / 2.0);
 
   // animate cube
   const delta = clock.getDelta();
