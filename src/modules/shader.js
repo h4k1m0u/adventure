@@ -7,8 +7,11 @@ const printGLVersion = () => {
   console.log(`GLSL version: ${gl.getParameter(gl.SHADING_LANGUAGE_VERSION)}`);
 };
 
+// https://threejsfundamentals.org/threejs/lessons/threejs-shadertoy.html
 const Shader = {
-  uniforms: {},
+  uniforms: {
+    time: { value: 0.0 },
+  },
   vertexShader: `
     void main() {
       // https://threejs.org/docs/#api/en/renderers/webgl/WebGLProgram
@@ -16,8 +19,11 @@ const Shader = {
     }
   `,
   fragmentShader: `
+    uniform float time;
+
     void main() {
-      gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);
+      vec3 color = vec3(0.5 * cos(time) + 0.5);
+      gl_FragColor = vec4(color, 1.0);
     }
   `,
 };

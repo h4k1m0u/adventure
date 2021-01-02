@@ -67,10 +67,11 @@ function init() {
     0.1, 1000);
   renderer = new THREE.WebGLRenderer({ alpha: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
-  document.body.appendChild(renderer.domElement);
+  const canvas = renderer.domElement;
+  document.body.appendChild(canvas);
 
   // scene navigation with pan/zoom/rotate
-  controls = new OrbitControls(camera, renderer.domElement);
+  controls = new OrbitControls(camera, canvas);
   camera.position.z = 5;
   controls.update();
 
@@ -138,9 +139,17 @@ function init() {
 
 /**
  * Main loop based on requestAnimationFrame.
+ *
+ * time: argument passed from requestAnimationFrame to callback
+ * and represent time (in ms) since document was created.
  */
-function tick() {
+function tick(time) {
   stats.begin();
+
+  // change cube color using shader uniforms
+  const timeUniform = Shader.uniforms.time;
+  timeUniform.value = time / 1000;
+  // console.log('Math.cos(time/1000) ', (1.0 + Math.cos(time / 1000)) / 2.0);
 
   // animate cube
   const delta = clock.getDelta();
